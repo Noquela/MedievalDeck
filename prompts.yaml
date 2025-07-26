@@ -1,6 +1,29 @@
 # Medieval Deck - Asset Generation Prompts
 # Otimizado para SDXL - Máx 77 tokens, Máxima Qualidade
 
+# ——————————————————————————————————————————
+# SPRINT 02 : UI & Game Flow (menu → select → combat)
+# Escopo: criar 3 classes de tela e fluxo de transição
+# ——————————————————————————————————————————
+instructions:
+  - "🖼️ Use assets/bg/menu.png como fundo da tela de menu."
+  - "🖼️ Use assets/bg/card_selection.png com blur leve (Surface.convert_alpha + pygame.transform.smoothscale) para CharacterSelectScreen."
+  - "🖼️ Use assets/bg/arena.png como fundo fixo da CombatScreen."
+  - "Crie classes: MenuScreen, CharacterSelectScreen, CombatScreen, todas herdando de ui.screen_base.ScreenBase."
+  - "Implemente ScreenManager em src/ui/screen_manager.py com métodos push(screen) e pop()."
+  - "main.py deve iniciar ScreenManager(add=MenuScreen) e delegar update/draw/handle_event."
+  - "Ao clicar em 'Jogar' → push(CharacterSelectScreen). Após escolher personagem → push(CombatScreen)."
+  - "Não gere novos PNGs; apenas carregue existentes via engine.resources.load_image com cache=True."
+  - "Adicione fade-in de 500 ms entre telas (pygame.time.get_ticks())."
+  - "Garanta window size 3440×1440 hard-coded em settings.WINDOW_WIDTH/HEIGHT."
+  - "Escreva testes em tests/test_sprint02.py para: a) Menu cria botão, b) Seleção retorna classe escolhida, c) CombatScreen carrega arena.png."
+  - "✨ Use type hints, uma classe pública por arquivo, PEP 8 + black."
+
+prompts_sdxl:
+  menu_bg: "Gothic castle throne-hall, warm candlelight, intricate tapestries, gold accents, atmospheric, ultrawide, masterpiece, 3D, highly-detailed"
+  card_selection_bg: "Medieval library alcove, floating arcane cards, soft volumetric light, warm amber hues, cinematic, ultrawide, fantasy artwork, high-detail"
+  arena_bg: "Stone courtyard battleground, cracked flagstones, torches on walls, dusk lighting, dramatic shadows, epic fantasy, ultrawide, realistic details"
+
 backgrounds:
   arena: "medieval stone dungeon, torchlight, gothic archways, volumetric lighting, weathered stones, shadows, cinematic, masterpiece, highly detailed"
   menu: "medieval castle throne room, ornate tapestries, golden chalices, royal banners, warm candlelight, luxury, detailed architecture"

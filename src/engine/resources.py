@@ -158,3 +158,19 @@ def load_sprite_sheet(path: str, frame_width: int, frame_height: int,
         List of pygame surfaces, one per frame
     """
     return _resource_manager.load_sprite_sheet(path, frame_width, frame_height, frame_count)
+
+
+def load_image(path: str, cache: bool = True) -> Optional[pygame.Surface]:
+    """Load an image with optional caching.
+    
+    Args:
+        path: Path to image file
+        cache: Whether to use caching (ignored, always cached)
+        
+    Returns:
+        Pygame surface or None if loading fails
+    """
+    try:
+        return _resource_manager.load_texture(path)
+    except (FileNotFoundError, RuntimeError):
+        return None

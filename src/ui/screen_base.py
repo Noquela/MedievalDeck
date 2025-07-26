@@ -1,8 +1,5 @@
 """
-TODO Sprint 03:
-□ Screen base class abstrata
-□ Sistema de transição entre telas
-□ Gestão de eventos padrão
+Base screen class for the screen management system.
 """
 
 from abc import ABC, abstractmethod
@@ -13,17 +10,12 @@ import pygame
 class ScreenBase(ABC):
     """Base class for all game screens."""
     
-    def __init__(self, screen: pygame.Surface) -> None:
-        """Initialize screen.
-        
-        Args:
-            screen: Main pygame screen surface
-        """
-        self.screen = screen
-        self.screen_width = screen.get_width()
-        self.screen_height = screen.get_height()
+    def __init__(self) -> None:
+        """Initialize screen."""
         self.running = True
-        self.next_screen: Optional[str] = None
+        self.fade_alpha = 0
+        self.fade_start_time = 0
+        self.fade_duration = 500  # milliseconds
         
         # Common fonts
         self.font_small = pygame.font.Font(None, 24)
@@ -48,6 +40,38 @@ class ScreenBase(ABC):
             dt: Delta time in seconds
         """
         pass
+    
+    @abstractmethod
+    def draw(self, surface: pygame.Surface) -> None:
+        """Draw the screen.
+        
+        Args:
+            surface: Surface to draw on
+        """
+        pass
+    
+    def start_fade_in(self) -> None:
+        """Start fade-in transition."""
+        self.fade_start_time = pygame.time.get_ticks()
+        self.fade_alpha = 255
+    
+    def update_fade(self) -> None:
+        """Update fade effect."""
+        if self.fade_start_time > 0:
+            elapsed = pygame.time.get_ticks() - self.fade_start_time
+            if elapsed < self.fade_duration:
+                self.fade_alpha = int(255 * (1 - elapsed / self.fade_duration))
+            else:
+                self.fade_alpha = 0
+                self.fade_start_time = 0
+    
+    def draw_fade(self, surface: pygame.Surface) -> None:
+        """Draw fade overlay if active."""
+        if self.fade_alpha > 0:
+            fade_surface = pygame.Surface(surface.get_size())
+            fade_surface.fill((0, 0, 0))
+            fade_surface.set_alpha(self.fade_alpha)
+            surface.blit(fade_surface, (0, 0))
     
     @abstractmethod
     def draw(self) -> None:

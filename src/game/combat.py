@@ -1,12 +1,13 @@
 """
-TODO Sprint 04:
-□ CombatEngine com estado de luta
-□ Sistema de energia e turno
-□ Aplicação de efeitos de cartas
+TODO Sprint 03: ✅ EM PROGRESSO  
+✔ Sistema de energia expandido
+✔ Integração com tipos de carta
+✔ Efeitos especiais de cartas
+□ Power cards com efeitos permanentes
 """
 
 from typing import Dict, Any, Optional
-from .cards import Card
+from .cards import Card, CardType
 from .deck import Deck
 from .enemy import Enemy, IntentType
 
@@ -15,7 +16,7 @@ class Player:
     """Represents the player character in combat."""
     
     def __init__(self, max_hp: int = 70, max_energy: int = 3) -> None:
-        """Initialize player.
+        """Initialize player with HP and energy.
         
         Args:
             max_hp: Maximum hit points
@@ -26,6 +27,14 @@ class Player:
         self.max_energy = max_energy
         self.energy = max_energy
         self.block = 0
+        
+        # Power effects (permanent until combat ends)
+        self.powers = {
+            "damage_bonus": 0,       # Extra damage on attacks
+            "block_bonus": 0,        # Extra block on defense
+            "energy_bonus": 0,       # Extra energy per turn
+            "draw_bonus": 0,         # Extra cards drawn per turn
+        }
     
     def take_damage(self, damage: int) -> int:
         """Apply damage to player, accounting for block.
@@ -56,7 +65,9 @@ class Player:
             block_amount: Amount of block to add
         """
         if block_amount > 0:
-            self.block += block_amount
+            # Apply block bonus from powers
+            total_block = block_amount + self.powers.get("block_bonus", 0)
+            self.block += total_block
     
     def heal(self, heal_amount: int) -> int:
         """Heal the player.
@@ -76,8 +87,9 @@ class Player:
     
     def start_turn(self) -> None:
         """Called at start of player turn."""
-        # Restore energy
-        self.energy = self.max_energy
+        # Restore energy (with bonus from powers)
+        base_energy = self.max_energy + self.powers.get("energy_bonus", 0)
+        self.energy = base_energy
         # Block expires at start of turn
         self.block = 0
     
@@ -94,6 +106,25 @@ class Player:
             self.energy -= amount
             return True
         return False
+    
+    def add_energy(self, amount: int) -> None:
+        """Add temporary energy this turn.
+        
+        Args:
+            amount: Energy to add
+        """
+        if amount > 0:
+            self.energy += amount
+    
+    def apply_power(self, power_type: str, value: int) -> None:
+        """Apply a power effect to the player.
+        
+        Args:
+            power_type: Type of power effect
+            value: Value to add to the power
+        """
+        if power_type in self.powers:
+            self.powers[power_type] += value
     
     def is_dead(self) -> bool:
         """Check if player is dead.
@@ -120,9 +151,11 @@ class CombatEngine:
         self.turn_count = 0
         self.combat_over = False
         self.player_won = False
+        self.cards_played_this_turn = []  # Track for Battle Fury effect
         
         # Draw starting hand
-        self.deck.draw(5)
+        cards_to_draw = 5 + self.player.powers.get("draw_bonus", 0)
+        self.deck.draw(cards_to_draw)
     
     def play_card(self, card_index: int) -> Optional[Dict[str, Any]]:
         """Play a card from hand by index.
@@ -148,6 +181,9 @@ class CombatEngine:
         # Remove card from hand and add to discard
         self.deck.play_card(card)
         
+        # Track for power effects
+        self.cards_played_this_turn.append(card)
+        
         # Apply card effects
         effect = self._apply_card_effects(card)
         
@@ -164,14 +200,29 @@ class CombatEngine:
         """
         effects = {
             "card_name": card.name,
+            "card_type": card.card_type.value,
             "damage_dealt": 0,
             "block_gained": 0,
-            "healing_done": 0
+            "healing_done": 0,
+            "energy_gained": 0,
+            "cards_drawn": 0
         }
         
         # Apply damage to enemy
         if card.damage > 0:
-            damage_dealt = self.enemy.take_damage(card.damage)
+            total_damage = card.damage
+            
+            # Apply damage bonus from powers
+            if card.card_type == CardType.ATTACK:
+                total_damage += self.player.powers.get("damage_bonus", 0)
+                
+                # Battle Fury effect: +1 damage per attack played this turn
+                battle_fury_bonus = len([c for c in self.cards_played_this_turn 
+                                       if c.card_type == CardType.ATTACK])
+                if self.player.powers.get("battle_fury", 0) > 0:
+                    total_damage += battle_fury_bonus
+            
+            damage_dealt = self.enemy.take_damage(total_damage)
             effects["damage_dealt"] = damage_dealt
         
         # Apply block to player
@@ -183,6 +234,30 @@ class CombatEngine:
         if card.heal > 0:
             healing_done = self.player.heal(card.heal)
             effects["healing_done"] = healing_done
+        
+        # Apply energy gain
+        if card.energy_gain > 0:
+            self.player.add_energy(card.energy_gain)
+            effects["energy_gained"] = card.energy_gain
+        
+        # Special card effects
+        if card.name == "Preparation":
+            drawn_cards = self.deck.draw(2)
+            effects["cards_drawn"] = len(drawn_cards)
+        elif card.name == "Guardian Stance":
+            drawn_cards = self.deck.draw(1)
+            effects["cards_drawn"] = len(drawn_cards)
+        elif card.name == "Sword Mastery":
+            self.player.apply_power("damage_bonus", 2)
+        elif card.name == "Armor Training":
+            self.player.apply_power("block_bonus", 3)
+        elif card.name == "Battle Fury":
+            self.player.apply_power("battle_fury", 1)
+        elif card.name == "Blade Flurry":
+            # Deal damage 3 times
+            for _ in range(2):  # Already dealt once above
+                extra_damage = self.enemy.take_damage(card.damage)
+                effects["damage_dealt"] += extra_damage
         
         # Check if enemy died
         if self.enemy.is_dead():
@@ -200,9 +275,13 @@ class CombatEngine:
         if self.combat_over:
             return {}
         
+        # Reset turn tracking
+        self.cards_played_this_turn.clear()
+        
         # Discard hand and draw new cards
         self.deck.discard_hand()
-        self.deck.draw(5)
+        cards_to_draw = 5 + self.player.powers.get("draw_bonus", 0)
+        self.deck.draw(cards_to_draw)
         
         # Enemy turn
         enemy_action = self._execute_enemy_turn()

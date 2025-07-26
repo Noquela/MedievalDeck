@@ -81,8 +81,9 @@ class TestSprint02:
         
         assert combat_screen is not None
         assert combat_screen.selected_character == selected_char
-        assert combat_screen.player_health == 100
-        assert combat_screen.enemy_health == 100
+        assert hasattr(combat_screen, 'combat_engine')
+        assert combat_screen.combat_engine.player.hp == 70  # Knight default HP
+        assert combat_screen.combat_engine.enemy.hp > 0  # Enemy has health
     
     def test_screen_navigation_flow(self):
         """Test complete navigation flow: Menu → Character Select → Combat."""

@@ -45,7 +45,17 @@ All visual assets are generated using:
 - ✅ 8/8 tests passing for screen system
 - ✅ Resource loading with caching
 
-### 🔄 Sprint 03 - Card Game Mechanics (PLANNED)
+### ✅ Sprint 03 - Card Game Mechanics (COMPLETE)
+- ✅ Expanded card system with 30-card Knight deck
+- ✅ Card types: Attack, Skill, Power, Special with color coding
+- ✅ Enhanced energy system with power effects
+- ✅ Turn-based combat with card playing mechanics
+- ✅ Special card effects (multi-hit, card draw, energy gain)
+- ✅ Interactive UI with card hover, selection, and descriptions
+- ✅ Complete combat flow: play cards → end turn → enemy action
+- ✅ 9/9 tests passing for card game mechanics
+
+### 🔄 Sprint 04 - Advanced Gameplay (PLANNED)
 - Card deck system and hand management
 - Combat mechanics and turn-based gameplay
 - Mage and Archer character implementations

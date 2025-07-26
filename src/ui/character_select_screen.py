@@ -24,28 +24,26 @@ class CharacterSelectScreen(ScreenBase):
         # Load background with blur effect
         self.background = load_image("assets/bg/card_selection.png", cache=True)
         
-        # Character options
+        # Character options (only show available characters)
         self.characters = [
             {"name": "Knight", "sprite_path": "assets/sheets/knight_idle.png", "description": "Heavily armored warrior with strong defense"},
-            {"name": "Mage", "sprite_path": None, "description": "Magical spellcaster with powerful abilities"},  # Not yet generated
-            {"name": "Archer", "sprite_path": None, "description": "Ranged fighter with precision attacks"}   # Not yet generated
+            # TODO: Add when sprites are generated
+            # {"name": "Mage", "sprite_path": "assets/sheets/mage_idle.png", "description": "Magical spellcaster with powerful abilities"},
+            # {"name": "Archer", "sprite_path": "assets/sheets/archer_idle.png", "description": "Ranged fighter with precision attacks"}
         ]
         
         # Character selection
         self.selected_character = 0
         self.character_rects = []
         
-        # Setup character card positions (3 cards horizontally centered)
+        # Setup character card positions (1 card centered for now)
         card_width = 400
         card_height = 600
-        spacing = 100
-        total_width = 3 * card_width + 2 * spacing
-        start_x = (3440 - total_width) // 2
         
-        for i in range(3):
-            x = start_x + i * (card_width + spacing)
-            y = (1440 - card_height) // 2
-            self.character_rects.append(pygame.Rect(x, y, card_width, card_height))
+        # Center single card
+        x = (3440 - card_width) // 2
+        y = (1440 - card_height) // 2
+        self.character_rects.append(pygame.Rect(x, y, card_width, card_height))
         
         # Load character sprites
         self.character_sprites = []
@@ -117,6 +115,11 @@ class CharacterSelectScreen(ScreenBase):
         title_text = self.font_title.render("Escolha seu Herói", True, (255, 215, 0))
         title_rect = title_text.get_rect(center=(1720, 150))
         surface.blit(title_text, title_rect)
+        
+        # Subtitle for Sprint 02
+        subtitle_text = self.font_medium.render("Knight disponível • Mage e Archer em desenvolvimento", True, (180, 180, 180))
+        subtitle_rect = subtitle_text.get_rect(center=(1720, 200))
+        surface.blit(subtitle_text, subtitle_rect)
         
         # Draw character cards
         for i, (char, rect) in enumerate(zip(self.characters, self.character_rects)):

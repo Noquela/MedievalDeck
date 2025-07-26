@@ -85,12 +85,14 @@ class CombatScreen(ScreenBase):
     def update(self, dt: float) -> None:
         """Update combat state."""
         # Check for game over conditions
-        if self.player_health <= 0 or self.enemy_health <= 0:
-            # For now, just reset health (placeholder)
-            if self.player_health <= 0:
-                self.player_health = 100
-            if self.enemy_health <= 0:
-                self.enemy_health = 100
+        if self.player_health <= 0:
+            # Player defeated
+            from .result_screen import ResultScreen
+            self.screen_manager.push(ResultScreen(self.screen_manager, False, self.selected_character["name"]))
+        elif self.enemy_health <= 0:
+            # Enemy defeated
+            from .result_screen import ResultScreen
+            self.screen_manager.push(ResultScreen(self.screen_manager, True, self.selected_character["name"]))
     
     def draw(self, surface: pygame.Surface) -> None:
         """Draw the combat screen."""

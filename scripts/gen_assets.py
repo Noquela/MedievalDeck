@@ -218,9 +218,10 @@ class AssetGenerator:
         
         # Save to cache and output
         img.save(cache_path)
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        img.save(output_path)
-        print(f"✅ Generated placeholder: {output_path}")
+        if output_path:
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            img.save(output_path)
+            print(f"✅ Generated placeholder: {output_path}")
         return True
         
     def generate_background(self, prompt: str, output_path: str, 
@@ -255,7 +256,6 @@ class AssetGenerator:
         
         sprite_prompt = f"{prompt}, sprite sheet, {frame_count} frames, animation sequence"
         return self.generate_image(sprite_prompt, output_path, (sheet_width, height))
-        return True
 
 
 def main() -> None:

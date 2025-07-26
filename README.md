@@ -26,15 +26,32 @@ All visual assets are generated using:
 - GitHub Actions CI workflow
 - Automated testing setup
 
-### 🎨 Sprint 01 - AI Assets (IN PROGRESS)
+### ✅ Sprint 01 - AI Assets (COMPLETE)
 - ✅ SDXL pipeline with RTX 5070 optimization
 - ✅ Arena background (3440x1440)
 - ✅ Medieval card frame (512x768)
 - ✅ Knight sprite sheets (5120x512, 10 frames)
-- 🔄 Goblin sprite sheets (generating...)
-- 🔄 Additional backgrounds (menu, selection screens)
-- Sistema de save/load
-- Ato 1 completo com 8 combates (incluindo mini-boss e boss final)
+- ✅ Goblin sprite sheets (4240x424, 10 frames)
+- ✅ Additional backgrounds (menu, card_selection)
+- ✅ Cache system for generated assets
+- ✅ All core visual assets generated
+
+### ✅ Sprint 02 - UI & Game Flow (COMPLETE)
+- ✅ Screen management system with fade transitions
+- ✅ MenuScreen with AI background
+- ✅ CharacterSelectScreen with character options
+- ✅ CombatScreen with arena and basic combat
+- ✅ Navigation flow: Menu → Selection → Combat
+- ✅ 8/8 tests passing for screen system
+- ✅ Resource loading with caching
+
+### 🔄 Sprint 03 - Card Game Mechanics (PLANNED)
+- Card deck system and hand management
+- Combat mechanics and turn-based gameplay
+- Mage and Archer character implementations
+- Save/load system
+- Victory/defeat screens and progression
+- Advanced combat animations
 
 ## Como Rodar
 

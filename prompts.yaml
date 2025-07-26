@@ -1,0 +1,25 @@
+# Medieval Deck - Asset Generation Prompts
+# Otimizado para SDXL - Máx 77 tokens, Máxima Qualidade
+
+backgrounds:
+  arena: "medieval stone dungeon, torchlight, gothic archways, volumetric lighting, weathered stones, shadows, cinematic, masterpiece, highly detailed"
+  menu: "medieval castle throne room, ornate tapestries, golden chalices, royal banners, warm candlelight, luxury, detailed architecture"
+  card_selection: "ancient library scrolls, leather tomes, mystical runes, candlelit study, parchment papers, magical atmosphere, scholarly"
+  deck_builder: "blacksmith forge, anvil tools, weapon racks, steel armor, glowing embers, craftsmanship, medieval workshop"
+  battle_prep: "war council chamber, strategy maps, battle plans, armor stands, weapons display, tactical planning, leadership"
+  
+ui_elements:
+  card_frame: "medieval manuscript border, gold filigree, Celtic knots, parchment texture, heraldic style, transparent center, museum quality"
+  button_frame: "ornate medieval button, carved stone, gold trim, heraldic symbols, royal crest, elegant design"
+  health_bar: "medieval life bar, red crystal gems, ornate gold frame, fantasy RPG interface, magical energy"
+  mana_bar: "mystical mana orb, blue crystal energy, arcane symbols, magical aura, glowing power"
+  
+character_sheets:
+  knight_idle: "medieval knight plate armor, heroic stance, sword, chainmail, heraldry, renaissance art, detailed armor, dramatic lighting"
+  knight_attack: "knight sword slash, cape flowing, armor gleaming, strike pose, motion blur, sparks, epic battle, renaissance style"
+  goblin_idle: "forest goblin scout, green skin, leather armor, pointed ears, tribal markings, fantasy creature, D&D artwork"
+  goblin_attack: "goblin warrior attack, dagger raised, snarling, dynamic pose, forest ambush, detailed fantasy creature"
+  mage_idle: "wise court wizard, flowing robes, staff crystal, arcane symbols, mystical aura, scholarly appearance, magical energy"
+  mage_attack: "mage casting fireball, robes billowing, magical circle, spell effects, arcane power, fantasy magic, dramatic lighting"
+  archer_idle: "forest ranger archer, leather armor, longbow, quiver arrows, woodland scout, detailed equipment, heroic pose"
+  archer_attack: "archer drawing bow, arrow nocked, focused aim, dynamic tension, forest background, precise shot, action pose"

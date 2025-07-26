@@ -1,9 +1,10 @@
 """
-TODO Sprint 02: ✅ COMPLETO
-✔ Sistema de telas (Menu → Seleção → Combate)
-✔ ScreenManager com fade transitions
-✔ Assets AI carregados corretamente
-✔ Navegação fluida entre telas
+TODO Sprint 03: ✅ COMPLETO
+✔ Sistema de cartas expandido (30 cartas Knight)
+✔ Mecânicas de combate por turnos
+✔ UI interativa com hover e seleção
+✔ Power effects e cartas especiais
+✔ Resultado screen corrigido
 """
 
 import pygame

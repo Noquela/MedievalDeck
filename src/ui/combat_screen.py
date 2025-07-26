@@ -206,7 +206,8 @@ class CombatScreen(ScreenBase):
         from .result_screen import ResultScreen
         
         won = self.combat_engine.did_player_win()
-        result_screen = ResultScreen(self.screen_manager, won)
+        character_name = self.selected_character.get("name", "Knight")
+        result_screen = ResultScreen(self.screen_manager, won, character_name)
         self.screen_manager.push(result_screen)
     
     def update(self, dt: float) -> None:

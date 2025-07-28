@@ -3,6 +3,7 @@ Tela de seleção de personagem do jogo Medieval Deck
 """
 
 import pygame
+import os
 from config import *
 from utils.buttons import Button
 
@@ -38,6 +39,19 @@ def tela_selecao(screen):
     Returns:
         str: Estado para qual tela ir ('menu', 'gameplay', 'quit')
     """
+    # Carrega backgrounds se existirem
+    backgrounds = {}
+    for hero_id in HEROES.keys():
+        bg_path = os.path.join(BACKGROUNDS_PATH, f"bg_{hero_id}_hall.png")
+        if os.path.exists(bg_path):
+            try:
+                backgrounds[hero_id] = pygame.image.load(bg_path)
+                # Redimensiona para a tela
+                backgrounds[hero_id] = pygame.transform.scale(backgrounds[hero_id], (SCREEN_WIDTH, SCREEN_HEIGHT))
+            except:
+                backgrounds[hero_id] = None
+        else:
+            backgrounds[hero_id] = None
     # Configuração das fontes
     title_font = pygame.font.Font(None, 64)
     hero_font = pygame.font.Font(None, 48)
@@ -71,6 +85,16 @@ def tela_selecao(screen):
     while running:
         # Preenche a tela com preto
         screen.fill(BLACK)
+        
+        # Desenha background se disponível para o herói selecionado
+        if heroi_selecionado and backgrounds.get(heroi_selecionado):
+            screen.blit(backgrounds[heroi_selecionado], (0, 0))
+        else:
+            # Fundo padrão com gradiente escuro
+            for y in range(SCREEN_HEIGHT):
+                alpha = int(255 * (1 - y / SCREEN_HEIGHT))
+                color = (0, 0, alpha // 4)
+                pygame.draw.line(screen, color, (0, y), (SCREEN_WIDTH, y))
         
         # Desenha o título
         screen.blit(title_text, title_rect)

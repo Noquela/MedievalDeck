@@ -19,7 +19,12 @@ Medieval Deck é um jogo de cartas onde você escolhe um herói medieval (Knight
 pip install -r requirements.txt
 ```
 
-2. Execute o jogo:
+2. (Opcional) Gere os assets com IA:
+```bash
+python generate_assets.py
+```
+
+3. Execute o jogo:
 ```bash
 python main.py
 ```
@@ -47,7 +52,18 @@ O desenvolvimento está dividido em 15 sprints, desde a estrutura base até o MV
 - **Python 3.8+**
 - **Pygame 2.5.2**
 - **Pillow 10.0.1**
+- **PyTorch 2.1.0** (otimizado para RTX 5070)
 - **Stable Diffusion XL** (para geração de assets)
+- **Diffusers 0.24.0** (pipeline de IA)
+
+## 🎨 Geração de Assets
+
+O jogo inclui um sistema de geração de assets com IA:
+
+- **Backgrounds dinâmicos** para cada herói
+- **Otimizado para RTX 5070** com SM120
+- **Seed fixa** para reprodutibilidade
+- **Prompts específicos** para cada personagem
 
 ## 📝 Licença
 

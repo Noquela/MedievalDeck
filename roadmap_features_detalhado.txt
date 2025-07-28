@@ -1,0 +1,146 @@
+
+# Medieval Deck - Roadmap Detalhado de Features por Sprint
+
+Este documento detalha o que cada sprint implementa em termos de funcionalidades específicas e comportamento esperado dentro do jogo.
+
+---
+
+## Sprint 1 – Estrutura Base
+- Criar estrutura de diretórios e arquivos vazios conforme estrutura definida
+- Criar `main.py` com o loop principal do jogo:
+  - Inicializar pygame
+  - Criar tela (ex: 1280x720)
+  - Rodar loop principal com `while running`
+  - Exibir tela preta com `screen.fill((0, 0, 0))`
+
+---
+
+## Sprint 2 – Tela de Menu
+- Criar arquivo `screens/menu.py`
+- Criar função `mostrar_menu(screen)` que:
+  - Exibe o nome do jogo centralizado
+  - Exibe 3 botões: Jogar, Opções, Sair
+  - Detecta clique nos botões com `pygame.MOUSEBUTTONDOWN`
+- Botões devem utilizar `utils/buttons.py`
+- Clique em “Jogar” troca tela para seleção de personagem
+
+---
+
+## Sprint 3 – Tela de Seleção de Personagem
+- Criar `screens/selection.py` com função `tela_selecao(screen)`
+- Mostrar os 3 heróis: Knight, Mage, Assassin
+- Ao clicar em cada um, destacar e exibir descrição
+- Trocar o fundo da tela dinamicamente (imagem do herói em /assets/backgrounds/)
+- Botão “Confirmar” inicia o combate
+
+---
+
+## Sprint 4 – Integração com IA
+- Criar `gen_assets/generate_backgrounds.py`
+- Implementar classe `AssetGenerator` com seed fixa (42)
+- Gerar imagens de fundo com prompts específicos por herói
+- Armazenar imagens com nomes como: `bg_knight_hall.png`, `bg_mage_tower.png`, etc.
+- Verificar se já existe imagem para não sobrescrever
+
+---
+
+## Sprint 5 – Tela de Combate Inicial
+- Criar `screens/gameplay.py` com função `tela_combate(screen)`
+- Exibir:
+  - Fundo de combate
+  - Sprite do jogador
+  - Sprite do inimigo
+  - HUD: barras de vida e mana
+  - Espaço reservado para as cartas
+
+---
+
+## Sprint 6 – Sistema de Turnos
+- Controlar variável `turno` para alternar entre jogador e inimigo
+- Jogador pode jogar carta no turno dele
+- Inimigo realiza ação simples (ex: ataque aleatório) no turno dele
+- Mostrar na interface de quem é o turno atual
+
+---
+
+## Sprint 7 – Sistema de Cartas
+- Criar `cards/deck.py` com classe `Carta`
+- Classe `Carta` possui:
+  - Nome
+  - Tipo (ataque, defesa, magia)
+  - Custo de mana
+  - Efeito
+- Classe `Deck` contém lista de cartas e lógica de compra
+- Implementar renderização de mão do jogador (ex: 3-5 cartas)
+- Permitir clique em carta para usá-la
+
+---
+
+## Sprint 8 – IA Inimiga Simples
+- Criar classe `Enemy` no gameplay
+- Definir atributos: vida, ataque, comportamento
+- Implementar IA simples:
+  - Se vida alta: atacar
+  - Se vida baixa: chance de defender
+
+---
+
+## Sprint 9 – Condições de Vitória e Derrota
+- Criar tela `screens/gameover.py`
+- Detectar:
+  - Vitória: inimigo com HP <= 0
+  - Derrota: jogador com HP <= 0
+- Exibir tela com texto final e botão de reinício
+
+---
+
+## Sprint 10 – Sistema de Eventos
+- Criar `screens/events.py`
+- Mostrar evento aleatório entre combates (curar, ganhar carta, perder HP)
+- Exibir fundo ilustrativo e 1 ou 2 escolhas com efeitos
+
+---
+
+## Sprint 11 – Loja de Cartas
+- Criar loja entre fases
+- Mostrar lista de 3 cartas à venda com preço
+- Jogador começa com moedas (inicial: 0)
+- Adicionar moedas como recompensa de batalha
+
+---
+
+## Sprint 12 – Relíquias
+- Criar estrutura para relíquias passivas
+- Ex: +1 carta na mão, +10% dano
+- Mostrar relíquias ativas no HUD
+- Implementar sistema de aquisição via eventos/loja
+
+---
+
+## Sprint 13 – Progressão por Fase
+- Estrutura de jogo:
+  - Combate → Evento → Combate → Loja → Boss
+- Implementar escalada de dificuldade
+- Alterar inimigos por fase
+
+---
+
+## Sprint 14 – Animações e Feedbacks
+- Adicionar:
+  - Efeito visual ao usar carta
+  - Animação de ataque/dano
+  - Transição de fade entre telas
+- Adicionar efeitos sonoros simples (UI, ataque, dano)
+
+---
+
+## Sprint 15 – Polimento e MVP
+- Polir interface
+- Corrigir bugs e transições
+- Criar README final
+- Criar tela de créditos simples
+- Testar com ciclo completo de jogo funcional
+
+---
+
+Atualizado: 27/07/2025

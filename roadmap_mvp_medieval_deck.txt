@@ -1,0 +1,125 @@
+
+# Medieval Deck - Roadmap Completo até MVP (Formato TXT para Cursor)
+
+## 🎯 Objetivo Geral
+Desenvolver um jogo de cartas roguelike (deckbuilder) em Pygame, com seleção de heróis, combates por turnos, progressão procedural, e integração com imagens geradas por IA (Stable Diffusion XL). O MVP incluirá todas as mecânicas básicas jogáveis com polish mínimo.
+
+---
+
+## 📁 Estrutura de Pastas
+
+Medieval-Deck/
+├── main.py                        # Entrada principal do jogo
+├── config.py                      # Constantes globais (resolução, FPS, caminhos)
+├── screens/                       # Telas do jogo
+│   ├── menu.py                    # Tela inicial com botões
+│   ├── selection.py               # Seleção de personagem
+│   ├── gameplay.py                # Tela de combate
+│   ├── events.py                  # Eventos entre combates
+│   └── gameover.py                # Tela de fim de jogo
+├── gen_assets/                    # Scripts de geração com IA
+│   └── generate_backgrounds.py    # Pipeline SDXL para fundos e personagens
+├── assets/                        # Recursos visuais
+│   ├── backgrounds/               # Fundos gerados com IA
+│   ├── heroes/                    # Sprites e imagens dos heróis
+│   └── ui/                        # Elementos de interface gráfica
+├── cards/                         # Cartas e decks
+│   ├── base_cards.json            # Definições das cartas básicas
+│   ├── relics.json                # Relíquias e efeitos
+│   └── deck.py                    # Classes de deck e carta
+├── utils/                         # Ferramentas auxiliares
+│   ├── buttons.py                 # Sistema de botões
+│   ├── transitions.py             # Efeitos de tela
+│   └── helpers.py                 # Códigos utilitários
+├── audio/                         # Sons e trilhas
+│   └── bgm_menu.ogg               # Música da tela de menu
+├── requirements.txt               # Dependências
+├── roadmap.txt                    # Este documento
+└── README.md                      # Descrição geral do projeto
+
+---
+
+## 📅 Roadmap por Sprint (até MVP)
+
+### Sprint 1 – Estrutura Base
+- Criar estrutura de pastas
+- Criar main.py com loop principal do jogo
+- Configuração básica de Pygame
+
+### Sprint 2 – Tela de Menu
+- Criar tela inicial com título e 3 botões (Jogar, Opções, Sair)
+- Implementar navegação básica
+
+### Sprint 3 – Tela de Seleção de Personagem
+- Mostrar 3 personagens (Knight, Mage, Assassin)
+- Exibir fundo gerado pela IA com blur leve
+- Sprite e descrição de cada herói
+
+### Sprint 4 – Integração com IA
+- Gerar fundos com SDXL
+- Criar generate_backgrounds.py com classe AssetGenerator
+- Armazenar imagens em /assets/backgrounds/
+
+### Sprint 5 – Tela de Combate Inicial
+- Implementar HUD (vida, mana)
+- Colocar placeholders para cartas na tela
+- Mostrar fundo e heróis
+
+### Sprint 6 – Sistema de Turnos
+- Alternância entre jogador e inimigo
+- Controlar ações em turnos separados
+- Adicionar efeitos visuais básicos
+
+### Sprint 7 – Sistema de Cartas
+- Criar classe Carta e Deck
+- Adicionar 3 tipos de cartas: ataque, defesa, magia
+- Implementar lógica de uso
+
+### Sprint 8 – IA Inimiga Simples
+- Criar classe Enemy com ação automática
+- Inimigo aleatoriamente ataca ou defende
+
+### Sprint 9 – Condições de Vitória e Derrota
+- Game Over quando vida do jogador chegar a 0
+- Vitória após derrotar o inimigo
+
+### Sprint 10 – Sistema de Eventos
+- Criar tela intermediária entre combates
+- Adicionar eventos aleatórios: cura, maldição, escolha de carta
+
+### Sprint 11 – Loja de Cartas
+- Comprar cartas com moeda (moeda inicial = 0)
+- Adicionar interface de compra
+
+### Sprint 12 – Relíquias
+- Criar sistema de relíquias passivas
+- Interface para exibir relíquias
+
+### Sprint 13 – Progressão por Fase
+- Gerar sequência procedural de combates/eventos/lojas
+- Aumentar dificuldade conforme progresso
+
+### Sprint 14 – Animações e Feedbacks
+- Efeitos visuais para ataques, dano, bloqueio
+- Transições entre telas
+
+### Sprint 15 – Polimento MVP
+- Ajuste visual de sprites e UI
+- Inclusão de música e sons
+- Testes e correções
+- Finalizar README e roadmap
+
+---
+
+## 🧠 Regras Importantes para Cursor / IA
+
+1. Nunca reescreva arquivos da pasta /gen_assets
+2. Sempre modularize por tela ou sistema
+3. Nunca mova funções entre arquivos sem preservar a arquitetura
+4. Preserve os nomes de arquivos e pastas definidos acima
+5. Comente todas as funções com docstrings
+6. Nunca sobrescreva imagens já geradas
+
+---
+
+Atualizado em: 27/07/2025

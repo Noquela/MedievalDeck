@@ -6,6 +6,9 @@ Arquivo principal do jogo
 import pygame
 import sys
 from config import *
+from screens.menu import mostrar_menu
+from screens.selection import tela_selecao
+from screens.gameplay import tela_combate
 
 class Game:
     def __init__(self):
@@ -15,6 +18,7 @@ class Game:
         pygame.display.set_caption("Medieval Deck")
         self.clock = pygame.time.Clock()
         self.running = True
+        self.current_state = STATE_MENU
         
     def handle_events(self):
         """Processa eventos do Pygame"""
@@ -31,12 +35,34 @@ class Game:
     
     def render(self):
         """Renderiza elementos na tela"""
-        # Preenche a tela com preto (placeholder)
-        self.screen.fill((0, 0, 0))
-        
-        # Aqui serão adicionadas as telas do jogo posteriormente
-        
-        pygame.display.flip()
+        # Gerencia as diferentes telas do jogo
+        if self.current_state == STATE_MENU:
+            result = mostrar_menu(self.screen)
+            if result == 'quit':
+                self.running = False
+            elif result == 'selection':
+                self.current_state = STATE_SELECTION
+            elif result == 'options':
+                # TODO: Implementar tela de opções
+                pass
+        elif self.current_state == STATE_SELECTION:
+            result = tela_selecao(self.screen)
+            if result == 'quit':
+                self.running = False
+            elif result == 'menu':
+                self.current_state = STATE_MENU
+            elif result == 'gameplay':
+                self.current_state = STATE_GAMEPLAY
+        elif self.current_state == STATE_GAMEPLAY:
+            result = tela_combate(self.screen)
+            if result == 'quit':
+                self.running = False
+            elif result == 'menu':
+                self.current_state = STATE_MENU
+        else:
+            # Tela padrão (preto)
+            self.screen.fill((0, 0, 0))
+            pygame.display.flip()
     
     def run(self):
         """Loop principal do jogo"""

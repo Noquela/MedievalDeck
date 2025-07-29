@@ -1,6 +1,7 @@
 """
 Hero selection screen for Medieval Deck
-Sprint 3 Implementation: Dynamic backgrounds with AI-generated assets
+Sprint 4 Implementation: RTX 5070 optimized AI generation with hero sprites
+Dynamic backgrounds + character sprites with enhanced quality
 """
 
 import pygame
@@ -37,6 +38,7 @@ class SelectionScreen:
         # Selection state
         self.selected_hero = None
         self.hero_backgrounds = {}
+        self.hero_sprites = {}
         self.current_background = None
         
         # Hero layout for ultrawide
@@ -57,11 +59,11 @@ class SelectionScreen:
             200, 80, "VOLTAR", self.button_font
         )
         
-        print("Selection screen initialized for Sprint 3")
-        print("AI background generation system ready")
+        print("Selection screen initialized for Sprint 4")
+        print("RTX 5070 optimized AI generation system ready")
         
-        # Pre-generate backgrounds asynchronously
-        self._preload_backgrounds()
+        # Pre-generate backgrounds and sprites asynchronously
+        self._preload_assets()
         
     def _calculate_hero_positions(self):
         """Calculate hero positions for ultrawide layout"""
@@ -94,21 +96,25 @@ class SelectionScreen:
                 bg_color=(0, 0, 0, 0)  # Transparent
             )
             
-    def _preload_backgrounds(self):
-        """Preload hero backgrounds in background"""
-        print("Preloading hero backgrounds...")
+    def _preload_assets(self):
+        """Preload hero backgrounds and sprites with RTX 5070 optimization"""
+        print("Preloading hero assets with RTX 5070 optimization...")
         
         try:
             # Generate all backgrounds
             self.hero_backgrounds = self.asset_generator.generate_all_hero_backgrounds()
-            print(f"Loaded {len(self.hero_backgrounds)} hero backgrounds")
+            print(f"Loaded {len(self.hero_backgrounds)} RTX optimized backgrounds")
+            
+            # Generate all hero sprites
+            self.hero_sprites = self.asset_generator.generate_all_hero_sprites()
+            print(f"Loaded {len(self.hero_sprites)} high-quality hero sprites")
             
             # Set default background (knight)
             if 'knight' in self.hero_backgrounds:
                 self._load_background('knight')
                 
         except Exception as e:
-            print(f"Warning: Background preloading failed: {e}")
+            print(f"Warning: Asset preloading failed: {e}")
             print("Using fallback rendering")
             
     def _load_background(self, hero_type):
@@ -211,8 +217,8 @@ class SelectionScreen:
         title_rect = title.get_rect(center=(SCREEN_WIDTH // 2, 100))
         screen.blit(title, title_rect)
         
-        # Draw heroes
-        self._draw_heroes(screen)
+        # Draw heroes with sprites
+        self._draw_heroes_with_sprites(screen)
         
         # Draw selection indicator
         if self.selected_hero:
@@ -227,7 +233,7 @@ class SelectionScreen:
         self.back_button.draw(screen)
         
         # Draw sprint indicator
-        sprint_text = self.desc_font.render("Sprint 3: Hero Selection + AI Backgrounds", True, WHITE)
+        sprint_text = self.desc_font.render("Sprint 4: RTX 5070 Optimized AI + Hero Sprites", True, WHITE)
         sprint_rect = sprint_text.get_rect(bottomright=(SCREEN_WIDTH - 20, SCREEN_HEIGHT - 20))
         screen.blit(sprint_text, sprint_rect)
         
@@ -239,33 +245,72 @@ class SelectionScreen:
             color = (intensity // 2, intensity // 4, intensity)
             pygame.draw.line(screen, color, (0, y), (SCREEN_WIDTH, y))
             
-    def _draw_heroes(self, screen):
-        """Draw hero selection areas"""
+    def _draw_heroes_with_sprites(self, screen):
+        """Draw hero selection areas with AI-generated sprites"""
         for hero, pos_data in self.hero_positions.items():
             rect = pos_data['rect']
             
-            # Draw hero placeholder (will be replaced with AI sprites in future)
+            # Draw hero container
             border_color = GOLD if hero == self.selected_hero else WHITE
-            pygame.draw.rect(screen, (32, 32, 32), rect)
+            pygame.draw.rect(screen, (16, 16, 24), rect)  # Darker background
             pygame.draw.rect(screen, border_color, rect, 4)
             
-            # Draw hero name
+            # Draw AI-generated sprite if available
+            if hero in self.hero_sprites and os.path.exists(self.hero_sprites[hero]):
+                try:
+                    sprite_image = pygame.image.load(self.hero_sprites[hero])
+                    
+                    # Scale sprite to fit in hero area (maintaining aspect ratio)
+                    sprite_size = min(rect.width - 40, rect.height - 120)
+                    sprite_image = pygame.transform.scale(sprite_image, (sprite_size, sprite_size))
+                    
+                    # Center sprite in hero area
+                    sprite_rect = sprite_image.get_rect(center=(rect.centerx, rect.centery - 20))
+                    screen.blit(sprite_image, sprite_rect)
+                    
+                    # Add subtle glow effect for selected hero
+                    if hero == self.selected_hero:
+                        glow_surface = pygame.Surface((sprite_size + 20, sprite_size + 20))
+                        glow_surface.set_alpha(30)
+                        glow_surface.fill(GOLD)
+                        glow_rect = glow_surface.get_rect(center=sprite_rect.center)
+                        screen.blit(glow_surface, glow_rect)
+                        
+                except Exception as e:
+                    print(f"Error loading sprite for {hero}: {e}")
+                    self._draw_hero_placeholder(screen, hero, rect)
+            else:
+                self._draw_hero_placeholder(screen, hero, rect)
+            
+            # Draw hero name below sprite
             hero_data = HEROES[hero]
             name_surface = self.hero_font.render(hero_data['name'], True, border_color)
-            name_rect = name_surface.get_rect(center=pos_data['name_pos'])
+            name_rect = name_surface.get_rect(center=(rect.centerx, rect.bottom - 60))
             screen.blit(name_surface, name_rect)
             
-            # Draw basic stats in hero area
-            stats_y = rect.y + 50
-            stats = [
-                f"Health: {hero_data['health']}",
-                f"Mana: {hero_data['mana']}"
-            ]
-            
-            for i, stat in enumerate(stats):
-                stat_surface = self.desc_font.render(stat, True, WHITE)
-                stat_rect = stat_surface.get_rect(center=(rect.centerx, stats_y + i * 40))
-                screen.blit(stat_surface, stat_rect)
+            # Draw stats below name
+            stats = [f"HP: {hero_data['health']}", f"MP: {hero_data['mana']}"]
+            stats_text = " | ".join(stats)
+            stats_surface = self.desc_font.render(stats_text, True, WHITE)
+            stats_rect = stats_surface.get_rect(center=(rect.centerx, rect.bottom - 25))
+            screen.blit(stats_surface, stats_rect)
+    
+    def _draw_hero_placeholder(self, screen, hero, rect):
+        """Draw placeholder when sprite is not available"""
+        # Draw simple placeholder
+        placeholder_color = (64, 64, 64)
+        placeholder_rect = pygame.Rect(
+            rect.centerx - 100, rect.centery - 100, 200, 200
+        )
+        pygame.draw.rect(screen, placeholder_color, placeholder_rect)
+        pygame.draw.rect(screen, WHITE, placeholder_rect, 2)
+        
+        # Draw hero initial
+        initial = hero[0].upper()
+        initial_font = pygame.font.Font(None, 120)
+        initial_surface = initial_font.render(initial, True, WHITE)
+        initial_rect = initial_surface.get_rect(center=placeholder_rect.center)
+        screen.blit(initial_surface, initial_rect)
                 
     def _draw_selection_indicator(self, screen):
         """Draw indicator around selected hero"""

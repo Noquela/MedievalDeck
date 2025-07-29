@@ -1,16 +1,18 @@
 """
 AI Asset Generator for Medieval Deck
-Sprint 3 Implementation: Hero backgrounds with SDXL
-Following art direction for gothic medieval realism
+Sprint 4 Implementation: RTX 5070 optimized SDXL with hero sprite generation
+Following art direction for gothic medieval realism with maximum quality
 """
 
 import os
 import torch
 from diffusers import StableDiffusionXLPipeline
-from PIL import Image
+from PIL import Image, ImageFilter, ImageEnhance
 import hashlib
+import time
 from config import AI_SEED, AI_IMAGE_SIZE, BACKGROUNDS_DIR
 from .art_direction import ArtDirection
+from .rtx_optimizer import RTX5070Optimizer
 
 class AssetGenerator:
     """
@@ -19,14 +21,15 @@ class AssetGenerator:
     """
     
     def __init__(self, use_mock=False):
-        """Initialize SDXL pipeline with optimal settings"""
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        """Initialize RTX 5070 optimized SDXL pipeline"""
+        self.use_mock = use_mock
+        self.optimizer = RTX5070Optimizer()
+        self.device = self.optimizer.device
         self.pipeline = None
         self.cache_dir = "gen_assets"
-        self.use_mock = use_mock
         
         print(f"AssetGenerator initialized - Device: {self.device}")
-        print("Sprint 3: AI background generation with gothic medieval style")
+        print("Sprint 4: RTX 5070 optimized AI generation with maximum quality")
         
         # Ensure directories exist
         os.makedirs(BACKGROUNDS_DIR, exist_ok=True)
@@ -43,20 +46,23 @@ class AssetGenerator:
                 return
                 
             try:
-                print("Loading Stable Diffusion XL pipeline...")
+                print("Loading RTX 5070 optimized SDXL pipeline...")
+                print("This may take a few minutes on first run...")
+                
+                # Load base SDXL model
                 self.pipeline = StableDiffusionXLPipeline.from_pretrained(
                     "stabilityai/stable-diffusion-xl-base-1.0",
                     torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
-                    use_safetensors=True
+                    use_safetensors=True,
+                    variant="fp16" if self.device == "cuda" else None
                 )
                 
+                # Apply RTX 5070 optimizations
                 if self.device == "cuda":
-                    self.pipeline = self.pipeline.to("cuda")
-                    # RTX 5070 optimizations
-                    self.pipeline.enable_model_cpu_offload()
-                    self.pipeline.enable_attention_slicing()
+                    self.pipeline = self.optimizer.optimize_pipeline(self.pipeline)
+                    self.optimizer.print_system_info()
                 
-                print("SDXL pipeline loaded successfully")
+                print("RTX 5070 optimized SDXL pipeline ready!")
                 
             except Exception as e:
                 print(f"Warning: Could not load SDXL pipeline: {e}")
@@ -118,19 +124,62 @@ class AssetGenerator:
             return img
         
         else:
-            # Real SDXL generation
+            # RTX 5070 optimized SDXL generation
             generator = torch.Generator(device=self.device).manual_seed(prompt_config['seed'])
             
-            image = self.pipeline(
-                prompt=prompt_config['positive'],
-                negative_prompt=prompt_config['negative'],
-                width=prompt_config['width'],
-                height=prompt_config['height'],
-                num_inference_steps=30,
-                guidance_scale=7.5,
-                generator=generator
-            ).images[0]
+            # Get optimal parameters for RTX 5070
+            optimal_params = self.optimizer.get_optimal_generation_params(
+                (prompt_config['width'], prompt_config['height'])
+            )
+            optimal_params['generator'] = generator
             
+            # Generate with optimization context
+            with self.optimizer.optimized_generation():
+                start_time = time.time()
+                
+                image = self.pipeline(
+                    prompt=prompt_config['positive'],
+                    negative_prompt=prompt_config['negative'],
+                    **optimal_params
+                ).images[0]
+                
+                generation_time = time.time() - start_time
+                print(f"Generation completed in {generation_time:.2f}s")
+            
+            # Apply post-processing for enhanced quality
+            image = self._enhance_image_quality(image)
+            
+            return image
+    
+    def _enhance_image_quality(self, image):
+        """
+        Apply post-processing to enhance image quality
+        Optimized for medieval gothic art style
+        
+        Args:
+            image: PIL Image to enhance
+            
+        Returns:
+            PIL Image: Enhanced image
+        """
+        try:
+            # Subtle sharpening for detail enhancement
+            sharpening_filter = ImageFilter.UnsharpMask(radius=1.5, percent=120, threshold=3)
+            image = image.filter(sharpening_filter)
+            
+            # Enhance contrast for dramatic medieval look
+            enhancer = ImageEnhance.Contrast(image)
+            image = enhancer.enhance(1.1)
+            
+            # Slight color saturation boost for richness
+            enhancer = ImageEnhance.Color(image)
+            image = enhancer.enhance(1.05)
+            
+            print("Image quality enhanced with medieval gothic processing")
+            return image
+            
+        except Exception as e:
+            print(f"Warning: Image enhancement failed: {e}")
             return image
     
     def generate_hero_background(self, hero_type):
@@ -198,7 +247,7 @@ class AssetGenerator:
     
     def generate_hero_sprite(self, hero_type):
         """
-        Generate hero character sprite
+        Generate high-quality hero character sprite with RTX 5070 optimization
         
         Args:
             hero_type: 'knight', 'mage', or 'assassin'
@@ -206,7 +255,7 @@ class AssetGenerator:
         Returns:
             str: Path to generated sprite or None if failed
         """
-        print(f"Generating sprite for {hero_type}...")
+        print(f"Generating RTX 5070 optimized sprite for {hero_type}...")
         
         prompt_config = ArtDirection.get_hero_sprite_prompt(hero_type)
         cache_filename = f"sprite_{self._get_cache_filename(prompt_config)}"
@@ -219,18 +268,106 @@ class AssetGenerator:
         
         try:
             self._initialize_pipeline()
+            
+            # Generate base sprite
             image = self._generate_image(prompt_config)
             
-            # Save sprite
+            # Apply sprite-specific post-processing
+            image = self._process_sprite(image, hero_type)
+            
+            # Save sprite with high quality
             os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-            image.save(cache_path, "PNG", optimize=True)
-            print(f"Sprite generated: {cache_filename}")
+            image.save(cache_path, "PNG", optimize=True, quality=95)
+            print(f"High-quality sprite generated: {cache_filename}")
+            print(f"Character: {prompt_config['character_desc']}")
             
             return cache_path
             
         except Exception as e:
             print(f"Error generating sprite for {hero_type}: {e}")
             return None
+    
+    def _process_sprite(self, image, hero_type):
+        """
+        Apply sprite-specific processing for character clarity
+        
+        Args:
+            image: Base sprite image
+            hero_type: Hero type for specific adjustments
+            
+        Returns:
+            PIL Image: Processed sprite
+        """
+        try:
+            # Extra sharpening for character details
+            sharpening_filter = ImageFilter.UnsharpMask(radius=2.0, percent=150, threshold=2)
+            image = image.filter(sharpening_filter)
+            
+            # Hero-specific adjustments
+            if hero_type == 'knight':
+                # Enhance metallic details
+                enhancer = ImageEnhance.Contrast(image)
+                image = enhancer.enhance(1.15)
+            elif hero_type == 'mage':
+                # Enhance magical glow effects
+                enhancer = ImageEnhance.Color(image)
+                image = enhancer.enhance(1.2)
+            elif hero_type == 'assassin':
+                # Enhance shadow definition
+                enhancer = ImageEnhance.Brightness(image)
+                image = enhancer.enhance(0.95)
+            
+            print(f"Sprite processing applied for {hero_type}")
+            return image
+            
+        except Exception as e:
+            print(f"Warning: Sprite processing failed: {e}")
+            return image
+    
+    def generate_all_hero_sprites(self):
+        """
+        Generate high-quality sprites for all heroes
+        
+        Returns:
+            dict: Mapping of hero -> sprite path
+        """
+        heroes = ['knight', 'mage', 'assassin']
+        sprites = {}
+        
+        print("Generating all hero sprites with RTX 5070 optimization...")
+        print("Character art style: Gothic medieval realism with enhanced details")
+        
+        for hero in heroes:
+            path = self.generate_hero_sprite(hero)
+            if path:
+                sprites[hero] = path
+            else:
+                print(f"Failed to generate sprite for {hero}")
+        
+        print(f"Generated {len(sprites)}/3 hero sprites")
+        return sprites
+    
+    def benchmark_system(self):
+        """
+        Comprehensive benchmark of the RTX 5070 system
+        
+        Returns:
+            dict: Benchmark results
+        """
+        if self.use_mock or self.device == "cpu":
+            print("Benchmarking not available in mock/CPU mode")
+            return None
+            
+        self._initialize_pipeline()
+        
+        test_prompt = "Medieval knight in ornate armor, dramatic lighting, highly detailed"
+        results = self.optimizer.benchmark_generation(self.pipeline, test_prompt)
+        
+        # Add system info to results
+        results['memory_info'] = self.optimizer.get_memory_info()
+        results['device'] = self.device
+        
+        return results
     
     def get_background_path(self, hero_type):
         """

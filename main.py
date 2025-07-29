@@ -2,11 +2,11 @@
 Medieval Deck - Main game entry point
 A roguelike deckbuilder with AI-generated assets
 
-Sprint 3 Implementation:
-- Hero selection screen with AI backgrounds
-- SDXL integration for gothic medieval art
-- Dynamic background loading per hero
-- Complete navigation flow: Menu -> Selection -> Gameplay
+Sprint 4 Implementation:
+- RTX 5070 optimized SDXL pipeline
+- High-quality hero sprite generation
+- Advanced post-processing and image enhancement
+- Memory optimization and performance tuning
 """
 
 import pygame
@@ -33,7 +33,7 @@ class MedievalDeck:
         
         # Initialize display with ultrawide resolution
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption("Medieval Deck - Sprint 3")
+        pygame.display.set_caption("Medieval Deck - Sprint 4")
         
         # Initialize game systems
         self.clock = pygame.time.Clock()
@@ -56,7 +56,7 @@ class MedievalDeck:
         self.text_font = pygame.font.Font(None, 40)
         
         print(f"Medieval Deck initialized - Resolution: {SCREEN_WIDTH}x{SCREEN_HEIGHT}")
-        print("Sprint 3: Hero selection with AI backgrounds ready")
+        print("Sprint 4: RTX 5070 optimized AI generation with hero sprites ready")
         
     def handle_events(self):
         """Handle pygame events and delegate to current screen"""

@@ -1,9 +1,28 @@
+# Gaming and UI
 pygame>=2.5.0
-diffusers>=0.21.0
-torch>=2.0.0
-torchvision>=0.15.0
-accelerate>=0.21.0
-transformers>=4.30.0
-Pillow>=10.0.0
+
+# AI Generation - RTX 5070 Optimized
+torch>=2.1.0+cu121
+torchvision>=0.16.0+cu121
+torchaudio>=2.1.0+cu121
+diffusers>=0.25.0
+transformers>=4.36.0
+accelerate>=0.25.0
+safetensors>=0.4.1
+
+# Performance optimization
+xformers>=0.0.22
+flash-attn>=2.3.0
+
+# Memory and speed optimization  
+bitsandbytes>=0.41.3
+optimum>=1.14.0
+
+# Image processing
+Pillow>=10.1.0
+opencv-python>=4.8.0
 numpy>=1.24.0
-safetensors>=0.4.0
+
+# Model management
+huggingface-hub>=0.19.0
+compel>=2.0.2

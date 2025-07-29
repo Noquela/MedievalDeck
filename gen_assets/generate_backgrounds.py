@@ -81,7 +81,16 @@ class AssetGenerator:
         """
         content = f"{prompt_config['positive']}_{prompt_config['seed']}"
         hash_obj = hashlib.md5(content.encode())
-        return f"{prompt_config['hero']}_{hash_obj.hexdigest()[:8]}.png"
+        
+        # Use hero name if available, otherwise use element type
+        if 'hero' in prompt_config:
+            prefix = prompt_config['hero']
+        elif 'element' in prompt_config:
+            prefix = prompt_config['element']
+        else:
+            prefix = "asset"
+            
+        return f"{prefix}_{hash_obj.hexdigest()[:8]}.png"
     
     def _generate_image(self, prompt_config):
         """
@@ -106,8 +115,18 @@ class AssetGenerator:
                 font = ImageFont.truetype("arial.ttf", 60)
             except:
                 font = ImageFont.load_default()
+            
+            # Determine what type of asset this is
+            if 'hero' in prompt_config:
+                text = f"MOCK {prompt_config['hero'].upper()}\nBACKGROUND"
+                desc = prompt_config.get('scene_desc', 'Medieval scene')
+            elif 'element' in prompt_config:
+                text = f"MOCK {prompt_config['element'].upper()}\nUI ELEMENT"
+                desc = prompt_config.get('desc', 'UI element')
+            else:
+                text = "MOCK ASSET"
+                desc = "Generated asset"
                 
-            text = f"MOCK {prompt_config['hero'].upper()}\nBACKGROUND"
             bbox = draw.textbbox((0, 0), text, font=font)
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
@@ -117,9 +136,8 @@ class AssetGenerator:
             
             draw.text((x, y), text, fill=(200, 200, 200), font=font)
             
-            # Add scene description
-            scene_desc = prompt_config.get('scene_desc', 'Medieval scene')
-            draw.text((50, 50), scene_desc, fill=(150, 150, 150), font=font)
+            # Add description
+            draw.text((50, 50), desc, fill=(150, 150, 150), font=font)
             
             return img
         
@@ -368,6 +386,146 @@ class AssetGenerator:
         results['device'] = self.device
         
         return results
+    
+    def generate_ui_element(self, element_type):
+        """
+        Generate UI element following art direction
+        
+        Args:
+            element_type: Type of UI element to generate
+            
+        Returns:
+            str: Path to generated element or None if failed
+        """
+        print(f"Generating UI element: {element_type}...")
+        
+        prompt_config = ArtDirection.get_ui_element_prompt(element_type)
+        cache_filename = f"ui_{self._get_cache_filename(prompt_config)}"
+        cache_path = os.path.join("gen_assets/ui", cache_filename)
+        
+        # Check cache
+        if os.path.exists(cache_path):
+            print(f"Using cached UI element: {cache_filename}")
+            return cache_path
+        
+        try:
+            self._initialize_pipeline()
+            
+            # Generate UI element
+            image = self._generate_image(prompt_config)
+            
+            # Apply UI-specific post-processing
+            image = self._process_ui_element(image, element_type)
+            
+            # Save with high quality
+            os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+            image.save(cache_path, "PNG", optimize=True, quality=95)
+            print(f"UI element generated: {cache_filename}")
+            print(f"Description: {prompt_config['desc']}")
+            
+            return cache_path
+            
+        except Exception as e:
+            print(f"Error generating UI element {element_type}: {e}")
+            return None
+    
+    def _process_ui_element(self, image, element_type):
+        """
+        Apply UI-specific processing
+        
+        Args:
+            image: Base UI image
+            element_type: Type of UI element
+            
+        Returns:
+            PIL Image: Processed UI element
+        """
+        try:
+            # UI elements need extra sharpening for clarity
+            sharpening_filter = ImageFilter.UnsharpMask(radius=1.8, percent=140, threshold=2)
+            image = image.filter(sharpening_filter)
+            
+            # Element-specific adjustments
+            if element_type in ['arrow_left', 'arrow_right']:
+                # High contrast for navigation elements
+                enhancer = ImageEnhance.Contrast(image)
+                image = enhancer.enhance(1.25)
+            elif element_type == 'menu_background':
+                # Subtle adjustments for backgrounds
+                enhancer = ImageEnhance.Brightness(image)
+                image = enhancer.enhance(1.05)
+            elif element_type == 'title_emblem':
+                # Enhance metallic details
+                enhancer = ImageEnhance.Color(image)
+                image = enhancer.enhance(1.15)
+            
+            print(f"UI processing applied for {element_type}")
+            return image
+            
+        except Exception as e:
+            print(f"Warning: UI processing failed: {e}")
+            return image
+    
+    def generate_all_ui_elements(self):
+        """
+        Generate all UI elements for current screens
+        
+        Returns:
+            dict: Mapping of element -> path
+        """
+        ui_elements = ['menu_background', 'arrow_left', 'arrow_right', 'title_emblem']
+        elements = {}
+        
+        print("Generating all UI elements with RTX 5070 optimization...")
+        print("UI style: Gothic medieval with enhanced clarity")
+        
+        for element in ui_elements:
+            path = self.generate_ui_element(element)
+            if path:
+                elements[element] = path
+            else:
+                print(f"Failed to generate UI element: {element}")
+        
+        print(f"Generated {len(elements)}/{len(ui_elements)} UI elements")
+        return elements
+    
+    def auto_generate_screen_assets(self, screen_name, required_assets):
+        """
+        Automatically generate all assets required for a new screen
+        
+        Args:
+            screen_name: Name of the screen
+            required_assets: List of asset types needed
+            
+        Returns:
+            dict: Generated assets mapping
+        """
+        print(f"Auto-generating assets for {screen_name} screen...")
+        
+        generated_assets = {}
+        
+        for asset in required_assets:
+            if asset.startswith('hero_'):
+                # Hero-related asset
+                hero_type = asset.split('_')[1]
+                if asset.endswith('_background'):
+                    path = self.generate_hero_background(hero_type)
+                elif asset.endswith('_sprite'):
+                    path = self.generate_hero_sprite(hero_type)
+                else:
+                    continue
+            else:
+                # UI element
+                path = self.generate_ui_element(asset)
+            
+            if path:
+                generated_assets[asset] = path
+                print(f"[OK] Generated {asset}")
+            else:
+                print(f"[FAIL] Failed to generate {asset}")
+        
+        print(f"Auto-generation complete: {len(generated_assets)}/{len(required_assets)} assets")
+        return generated_assets
     
     def get_background_path(self, hero_type):
         """

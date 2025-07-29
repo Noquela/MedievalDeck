@@ -37,8 +37,11 @@ class SelectionScreen:
         
         # Selection state
         self.selected_hero = None
+        self.current_hero_index = 0  # For arrow navigation
+        self.heroes_list = ['knight', 'mage', 'assassin']
         self.hero_backgrounds = {}
         self.hero_sprites = {}
+        self.ui_elements = {}
         self.current_background = None
         
         # Hero layout for ultrawide
@@ -57,6 +60,17 @@ class SelectionScreen:
         self.back_button = Button(
             50, SCREEN_HEIGHT - 120,
             200, 80, "VOLTAR", self.button_font
+        )
+        
+        # Navigation arrows
+        self.left_arrow = Button(
+            100, SCREEN_HEIGHT // 2 - 40,
+            80, 80, "◀", self.hero_font
+        )
+        
+        self.right_arrow = Button(
+            SCREEN_WIDTH - 180, SCREEN_HEIGHT // 2 - 40,
+            80, 80, "▶", self.hero_font
         )
         
         print("Selection screen initialized for Sprint 4")
@@ -109,9 +123,13 @@ class SelectionScreen:
             self.hero_sprites = self.asset_generator.generate_all_hero_sprites()
             print(f"Loaded {len(self.hero_sprites)} high-quality hero sprites")
             
-            # Set default background (knight)
-            if 'knight' in self.hero_backgrounds:
-                self._load_background('knight')
+            # Generate UI elements (arrows, etc.)
+            self.ui_elements = self.asset_generator.generate_all_ui_elements()
+            print(f"Loaded {len(self.ui_elements)} UI elements")
+            
+            # Set default hero and background
+            self.selected_hero = self.heroes_list[0]
+            self._load_background(self.selected_hero)
                 
         except Exception as e:
             print(f"Warning: Asset preloading failed: {e}")
@@ -152,7 +170,14 @@ class SelectionScreen:
             str: Next game state or None
         """
         for event in events:
-            # Check hero selection
+            # Check arrow navigation
+            if self.left_arrow.handle_event(event):
+                self._navigate_hero(-1)
+                
+            if self.right_arrow.handle_event(event):
+                self._navigate_hero(1)
+            
+            # Check hero selection (for direct clicking)
             for hero, button in self.hero_buttons.items():
                 if button.handle_event(event):
                     self._select_hero(hero)
@@ -168,7 +193,29 @@ class SelectionScreen:
             if self.back_button.handle_event(event):
                 return "menu"  # Return to menu
                 
+            # Keyboard navigation
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    self._navigate_hero(-1)
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    self._navigate_hero(1)
+                elif event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+                    if self.selected_hero:
+                        self.game.selected_hero = self.selected_hero
+                        return "gameplay"
+                
         return None
+        
+    def _navigate_hero(self, direction):
+        """
+        Navigate between heroes using arrows
+        
+        Args:
+            direction: -1 for left, 1 for right
+        """
+        self.current_hero_index = (self.current_hero_index + direction) % len(self.heroes_list)
+        new_hero = self.heroes_list[self.current_hero_index]
+        self._select_hero(new_hero)
         
     def _select_hero(self, hero_type):
         """
@@ -178,6 +225,10 @@ class SelectionScreen:
             hero_type: Selected hero type
         """
         if hero_type != self.selected_hero:
+            # Update index for consistency
+            if hero_type in self.heroes_list:
+                self.current_hero_index = self.heroes_list.index(hero_type)
+            
             self.selected_hero = hero_type
             self._load_background(hero_type)
             print(f"Selected hero: {hero_type}")
@@ -217,13 +268,12 @@ class SelectionScreen:
         title_rect = title.get_rect(center=(SCREEN_WIDTH // 2, 100))
         screen.blit(title, title_rect)
         
-        # Draw heroes with sprites
-        self._draw_heroes_with_sprites(screen)
+        # Draw current hero (single hero display)
+        self._draw_current_hero(screen)
         
-        # Draw selection indicator
-        if self.selected_hero:
-            self._draw_selection_indicator(screen)
-            
+        # Draw navigation arrows
+        self._draw_navigation_arrows(screen)
+        
         # Draw hero description
         if self.selected_hero:
             self._draw_hero_description(screen)
@@ -231,6 +281,8 @@ class SelectionScreen:
         # Draw buttons
         self.confirm_button.draw(screen)
         self.back_button.draw(screen)
+        self.left_arrow.draw(screen)
+        self.right_arrow.draw(screen)
         
         # Draw sprint indicator
         sprint_text = self.desc_font.render("Sprint 4: RTX 5070 Optimized AI + Hero Sprites", True, WHITE)
@@ -244,6 +296,100 @@ class SelectionScreen:
             intensity = int(64 * (1 - y / SCREEN_HEIGHT))
             color = (intensity // 2, intensity // 4, intensity)
             pygame.draw.line(screen, color, (0, y), (SCREEN_WIDTH, y))
+    
+    def _draw_current_hero(self, screen):
+        """Draw the currently selected hero in center screen"""
+        if not self.selected_hero:
+            return
+            
+        # Center position for hero display
+        center_x = SCREEN_WIDTH // 2
+        center_y = SCREEN_HEIGHT // 2
+        
+        # Hero container
+        hero_rect = pygame.Rect(center_x - 300, center_y - 200, 600, 400)
+        pygame.draw.rect(screen, (16, 16, 24), hero_rect)
+        pygame.draw.rect(screen, GOLD, hero_rect, 6)
+        
+        # Draw AI-generated sprite if available
+        if self.selected_hero in self.hero_sprites and os.path.exists(self.hero_sprites[self.selected_hero]):
+            try:
+                sprite_image = pygame.image.load(self.hero_sprites[self.selected_hero])
+                
+                # Scale sprite for center display
+                sprite_size = 300
+                sprite_image = pygame.transform.scale(sprite_image, (sprite_size, sprite_size))
+                
+                # Center sprite
+                sprite_rect = sprite_image.get_rect(center=(center_x, center_y - 30))
+                screen.blit(sprite_image, sprite_rect)
+                
+                # Glow effect
+                glow_surface = pygame.Surface((sprite_size + 40, sprite_size + 40))
+                glow_surface.set_alpha(40)
+                glow_surface.fill(GOLD)
+                glow_rect = glow_surface.get_rect(center=sprite_rect.center)
+                screen.blit(glow_surface, glow_rect)
+                
+            except Exception as e:
+                print(f"Error loading sprite for {self.selected_hero}: {e}")
+                self._draw_hero_placeholder_center(screen, center_x, center_y)
+        else:
+            self._draw_hero_placeholder_center(screen, center_x, center_y)
+        
+        # Draw hero name below
+        hero_data = HEROES[self.selected_hero]
+        name_surface = self.title_font.render(hero_data['name'], True, GOLD)
+        name_rect = name_surface.get_rect(center=(center_x, center_y + 180))
+        screen.blit(name_surface, name_rect)
+        
+        # Draw stats
+        stats = [f"Health: {hero_data['health']}", f"Mana: {hero_data['mana']}"]
+        stats_text = " | ".join(stats)
+        stats_surface = self.hero_font.render(stats_text, True, WHITE)
+        stats_rect = stats_surface.get_rect(center=(center_x, center_y + 220))
+        screen.blit(stats_surface, stats_rect)
+    
+    def _draw_hero_placeholder_center(self, screen, center_x, center_y):
+        """Draw placeholder for center hero display"""
+        placeholder_rect = pygame.Rect(center_x - 150, center_y - 150, 300, 300)
+        pygame.draw.rect(screen, (64, 64, 64), placeholder_rect)
+        pygame.draw.rect(screen, WHITE, placeholder_rect, 4)
+        
+        # Draw hero initial
+        initial = self.selected_hero[0].upper()
+        initial_font = pygame.font.Font(None, 200)
+        initial_surface = initial_font.render(initial, True, WHITE)
+        initial_rect = initial_surface.get_rect(center=placeholder_rect.center)
+        screen.blit(initial_surface, initial_rect)
+    
+    def _draw_navigation_arrows(self, screen):
+        """Draw navigation arrows with AI-generated graphics if available"""
+        # Left arrow
+        if 'arrow_left' in self.ui_elements and os.path.exists(self.ui_elements['arrow_left']):
+            try:
+                arrow_img = pygame.image.load(self.ui_elements['arrow_left'])
+                arrow_img = pygame.transform.scale(arrow_img, (60, 60))
+                arrow_rect = arrow_img.get_rect(center=self.left_arrow.rect.center)
+                screen.blit(arrow_img, arrow_rect)
+            except:
+                pass  # Fallback to button text
+        
+        # Right arrow  
+        if 'arrow_right' in self.ui_elements and os.path.exists(self.ui_elements['arrow_right']):
+            try:
+                arrow_img = pygame.image.load(self.ui_elements['arrow_right'])
+                arrow_img = pygame.transform.scale(arrow_img, (60, 60))
+                arrow_rect = arrow_img.get_rect(center=self.right_arrow.rect.center)
+                screen.blit(arrow_img, arrow_rect)
+            except:
+                pass  # Fallback to button text
+        
+        # Hero counter
+        counter_text = f"{self.current_hero_index + 1} / {len(self.heroes_list)}"
+        counter_surface = self.desc_font.render(counter_text, True, WHITE)
+        counter_rect = counter_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 180))
+        screen.blit(counter_surface, counter_rect)
             
     def _draw_heroes_with_sprites(self, screen):
         """Draw hero selection areas with AI-generated sprites"""

@@ -163,15 +163,64 @@ class ArtDirection:
                 {cls.BASE_STYLE}, {cls.QUALITY_TAGS}
                 """.strip(),
                 'desc': 'Gothic stone frame'
+            },
+            
+            'arrow_left': {
+                'positive': f"""
+                Medieval arrow icon pointing left, ornate gothic design,
+                carved stone appearance, weathered texture, decorative flourishes,
+                heraldic style, {cls.BASE_STYLE}, {cls.QUALITY_TAGS}
+                """.strip(),
+                'desc': 'Gothic left navigation arrow'
+            },
+            
+            'arrow_right': {
+                'positive': f"""
+                Medieval arrow icon pointing right, ornate gothic design,
+                carved stone appearance, weathered texture, decorative flourishes,
+                heraldic style, {cls.BASE_STYLE}, {cls.QUALITY_TAGS}
+                """.strip(),
+                'desc': 'Gothic right navigation arrow'
+            },
+            
+            'menu_background': {
+                'positive': f"""
+                Medieval castle main hall, grand gothic architecture, massive stone pillars,
+                towering arched ceilings, royal banners hanging, torch lighting,
+                dramatic shadows, noble atmosphere, epic scale,
+                {cls.BASE_STYLE}, {cls.COLD_PALETTE}, {cls.QUALITY_TAGS}
+                """.strip(),
+                'desc': 'Grand castle hall for main menu',
+                'width': AI_IMAGE_SIZE[0],
+                'height': AI_IMAGE_SIZE[1]
+            },
+            
+            'title_emblem': {
+                'positive': f"""
+                Medieval heraldic emblem, ornate coat of arms, gothic design,
+                decorative shield with crossed swords, crown above,
+                intricate metalwork, golden details, royal insignia,
+                {cls.BASE_STYLE}, {cls.QUALITY_TAGS}
+                """.strip(),
+                'desc': 'Royal emblem for game title'
             }
         }
         
         base_config = ui_elements.get(element_type, ui_elements['button'])
+        
+        # Set dimensions based on element type
+        if element_type == 'menu_background':
+            width, height = base_config.get('width', AI_IMAGE_SIZE[0]), base_config.get('height', AI_IMAGE_SIZE[1])
+        elif element_type in ['arrow_left', 'arrow_right']:
+            width, height = 256, 256
+        else:
+            width, height = 512, 512
+        
         base_config.update({
             'negative': cls.NEGATIVE_PROMPT,
-            'width': 512,
-            'height': 512,
-            'seed': AI_SEED,
+            'width': width,
+            'height': height,
+            'seed': AI_SEED + hash(element_type) % 100,  # Slight variation per element
             'element': element_type
         })
         

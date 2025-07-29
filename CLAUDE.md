@@ -38,6 +38,28 @@ git push origin main
 - **AI Assets**: Store in `gen_assets/` with specific subfolders by type
 - **Testing**: All test files go in `/tests/` directory
 
+### Auto-Asset Generation System
+When creating new screens, the system automatically generates required assets:
+
+```python
+# Example: Auto-generate assets for a new screen
+generator = AssetGenerator()
+required_assets = ['menu_background', 'arrow_left', 'arrow_right', 'hero_knight_sprite']
+assets = generator.auto_generate_screen_assets('new_screen', required_assets)
+```
+
+**Asset Types Supported**:
+- `hero_{type}_background` - Hero-specific backgrounds
+- `hero_{type}_sprite` - Hero character sprites  
+- UI elements: `menu_background`, `arrow_left`, `arrow_right`, `title_emblem`
+- Custom UI elements via `generate_ui_element(type)`
+
+**New Screen Workflow**:
+1. Define required assets list
+2. Call `auto_generate_screen_assets(screen_name, assets)`
+3. Assets are generated following art direction and cached
+4. Use asset paths in screen rendering
+
 ### Asset Generation
 ```bash
 # Generate backgrounds for all heroes

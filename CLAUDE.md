@@ -18,6 +18,10 @@ python main.py
 
 # Generate AI assets (requires RTX 5070 or similar GPU)
 python gen_assets/generate_backgrounds.py
+
+# Run tests (all test files are in /tests/ directory)
+python tests/test_sprint1.py
+python tests/test_sprint2.py
 ```
 
 ### Sprint Development Rules
@@ -32,6 +36,7 @@ git push origin main
 - **Resolution**: 3440x1440 (ultrawide) for all backgrounds, UI and images
 - **Repository**: https://github.com/Noquela/MedievalDeckClaude
 - **AI Assets**: Store in `gen_assets/` with specific subfolders by type
+- **Testing**: All test files go in `/tests/` directory
 
 ### Asset Generation
 ```bash

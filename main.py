@@ -2,11 +2,11 @@
 Medieval Deck - Main game entry point
 A roguelike deckbuilder with AI-generated assets
 
-Sprint 2 Implementation:
-- Interactive menu system with buttons
-- Navigation between game states
-- Ultrawide-optimized UI components
-- Modular screen architecture
+Sprint 3 Implementation:
+- Hero selection screen with AI backgrounds
+- SDXL integration for gothic medieval art
+- Dynamic background loading per hero
+- Complete navigation flow: Menu -> Selection -> Gameplay
 """
 
 import pygame
@@ -14,6 +14,7 @@ import sys
 import os
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, BLACK, WHITE
 from screens.menu import MenuScreen
+from screens.selection import SelectionScreen
 
 class GameState:
     """Game state constants for state machine"""
@@ -32,7 +33,7 @@ class MedievalDeck:
         
         # Initialize display with ultrawide resolution
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption("Medieval Deck - Sprint 2")
+        pygame.display.set_caption("Medieval Deck - Sprint 3")
         
         # Initialize game systems
         self.clock = pygame.time.Clock()
@@ -42,8 +43,10 @@ class MedievalDeck:
         
         # Initialize screen objects
         self.menu_screen = MenuScreen(self)
+        self.selection_screen = SelectionScreen(self)
         self.screens = {
-            GameState.MENU: self.menu_screen
+            GameState.MENU: self.menu_screen,
+            GameState.SELECTION: self.selection_screen
         }
         
         # Initialize font system for fallback rendering
@@ -53,7 +56,7 @@ class MedievalDeck:
         self.text_font = pygame.font.Font(None, 40)
         
         print(f"Medieval Deck initialized - Resolution: {SCREEN_WIDTH}x{SCREEN_HEIGHT}")
-        print("Sprint 2: Interactive menu system ready")
+        print("Sprint 3: Hero selection with AI backgrounds ready")
         
     def handle_events(self):
         """Handle pygame events and delegate to current screen"""
@@ -79,9 +82,9 @@ class MedievalDeck:
         Args:
             new_state: Target state to transition to
         """
-        if new_state == GameState.SELECTION:
-            print("State change: MENU -> SELECTION (Coming in Sprint 3)")
-            # For now, stay in menu until Sprint 3
+        if new_state == GameState.GAMEPLAY and new_state not in self.screens:
+            print("State change: SELECTION -> GAMEPLAY (Coming in Sprint 5)")
+            # For now, stay in selection until Sprint 5
             return
         
         print(f"State change: {self.current_state} -> {new_state}")

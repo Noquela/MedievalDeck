@@ -1,0 +1,73 @@
+🎨 Documento de Direção de Arte — Medieval Deck
+🧭 Visão Geral
+Medieval Deck é um jogo roguelike de construção de baralho com temática medieval gótica. A estética busca equilíbrio entre o sombrio e o mágico, misturando realismo estilizado, arte digital e elementos de fantasia sombria. O objetivo é transmitir imersão, estratégia e mistério.
+
+🎨 Estilo Visual
+Tipo de Arte: Arte 2D com sombreamento realista e acabamento digital, inspirada em ilustrações medievais com traços modernos.
+
+Paleta Principal: Tons frios (azul profundo, cinza, violeta), iluminados por detalhes em dourado, vermelho-sangue ou verde-esmeralda.
+
+Inspiração Visual: Darkest Dungeon, Slay the Spire, Diablo IV, vitrais medievais, manuscritos antigos.
+
+Formato: Resolução padrão: 3440x1440 para backgrounds e UI widescreen.
+
+Proporção dos Personagens: Levemente desproporcional (cartoon estilizado), mas com silhuetas claras e fortes.
+
+🧙‍♂️ Personagens e Heróis
+Estilo: Silhuetas bem definidas, expressões intensas, roupas texturizadas com detalhes em couro, metal e tecido antigo.
+
+Design dos heróis:
+
+Knight: Armadura completa com entalhes religiosos, espada e escudo brilhante.
+
+Mage: Manto roxo escuro com efeitos de magia cintilando, olhos brilhantes.
+
+Assassin: Silhueta ágil com capuz, adagas duplas, postura furtiva.
+
+Sombra e integração com fundo: Todos os sprites devem ter uma leve sombra projetada que os integre visualmente ao cenário.
+
+🏰 Cenários e Fundos
+Estilo: Ambientes semi-realistas com iluminação dramática (volumétrica), como salões de castelo, pátios sagrados, masmorras e florestas escuras.
+
+Objetivo visual: Cada fundo deve contar uma história e refletir o tema do personagem em destaque.
+
+Geração com IA: Use prompts consistentes com a estética estabelecida, mantendo a resolução 3440x1440 e seed fixa para reproducibilidade.
+
+Desfoque inteligente: Aplicar depth of field sutil para destacar os personagens em primeiro plano.
+
+🧾 Cartas e Interface
+Cartas:
+
+Bordas texturizadas (imitação de pergaminho ou pedra).
+
+Ícones minimalistas e bem legíveis.
+
+Cores distintas por tipo (ataque, defesa, magia, especial).
+
+UI Geral:
+
+Estilo medieval rústico, mas limpo e funcional.
+
+Tipografia com toque de manuscrito antigo, porém legível (ex: Cinzel, IM Fell English, Uncial Antiqua).
+
+Feedbacks visuais (hover, clique, dano) com partículas pequenas, mas expressivas.
+
+🧠 Geração de Assets com IA
+Modelo preferido: Stable Diffusion XL com checkpoint especializado em fantasia medieval realista.
+
+Resolução: 3440x1440 para fundos, 1024x1024 para sprites e itens.
+
+Prompt base:
+
+arduino
+Copiar
+Editar
+"Medieval knight throne room, epic torchlight, gothic arches, ornate architecture, cinematic lighting, 3440x1440"
+Regras:
+
+Seed fixa: 42
+
+Salvar sempre em /gen_assets com cache para evitar regeneração
+
+Subpastas por tipo: backgrounds/, heroes/, ui/, cards/
+

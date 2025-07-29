@@ -1,3 +1,1 @@
-"""
-Módulo de telas do jogo Medieval Deck
-""" 
+# Screen modules for Medieval Deck

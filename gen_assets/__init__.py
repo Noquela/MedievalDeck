@@ -1,3 +1,1 @@
-"""
-Módulo de geração de assets com IA do jogo Medieval Deck
-""" 
+# AI asset generation modules for Medieval Deck

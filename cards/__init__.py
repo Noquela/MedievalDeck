@@ -1,3 +1,1 @@
-"""
-Módulo de cartas e decks do jogo Medieval Deck
-""" 
+# Card system modules for Medieval Deck

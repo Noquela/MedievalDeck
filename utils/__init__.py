@@ -1,3 +1,1 @@
-"""
-Módulo de utilitários do jogo Medieval Deck
-""" 
+# Utility modules for Medieval Deck
